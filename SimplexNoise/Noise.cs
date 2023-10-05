@@ -12,9 +12,9 @@ namespace SimplexNoise
     /// Implementation of the Perlin simplex noise, an improved Perlin noise algorithm.
     /// Based loosely on SimplexNoise1234 by Stefan Gustavson: http://staffwww.itn.liu.se/~stegu/aqsis/aqsis-newnoise/
     /// </summary>
-    public static class Noise
+    public class Noise
     {
-        public static float[] Calc1D(int width, float scale)
+        public float[] Calc1D(int width, float scale)
         {
             var values = new float[width];
             for (var i = 0; i < width; i++)
@@ -22,7 +22,7 @@ namespace SimplexNoise
             return values;
         }
 
-        public static float[,] Calc2D(int width, int height, float scale)
+        public float[,] Calc2D(int width, int height, float scale)
         {
             var values = new float[width, height];
             for (var i = 0; i < width; i++)
@@ -31,7 +31,7 @@ namespace SimplexNoise
             return values;
         }
 
-        public static float[, ,] Calc3D(int width, int height, int length, float scale)
+        public float[, ,] Calc3D(int width, int height, int length, float scale)
         {
             var values = new float[width, height, length];
             for (var i = 0; i < width; i++)
@@ -41,28 +41,28 @@ namespace SimplexNoise
             return values;
         }
 
-        public static float CalcPixel1D(int x, float scale)
+        public float CalcPixel1D(int x, float scale)
         {
             return Generate(x * scale) * 128 + 128;
         }
 
-        public static float CalcPixel2D(int x, int y, float scale)
+        public float CalcPixel2D(int x, int y, float scale)
         {
             return Generate(x * scale, y * scale) * 128 + 128;
         }
 
-        public static float CalcPixel3D(int x, int y, int z, float scale)
+        public float CalcPixel3D(int x, int y, int z, float scale)
         {
             return Generate(x * scale, y * scale, z * scale) * 128 + 128;
         }
 
-        static Noise()
+        public Noise()
         {
             _perm = new byte[PermOriginal.Length];
             PermOriginal.CopyTo(_perm, 0);
         }
 
-        public static int Seed
+        public int Seed
         {
             get => _seed;
             set
@@ -83,14 +83,14 @@ namespace SimplexNoise
             }
         }
 
-        private static int _seed;
+        private int _seed;
 
         /// <summary>
         /// 1D simplex noise
         /// </summary>
         /// <param name="x"></param>
         /// <returns></returns>
-        private static float Generate(float x)
+        private float Generate(float x)
         {
             var i0 = FastFloor(x);
             var i1 = i0 + 1;
@@ -115,7 +115,7 @@ namespace SimplexNoise
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        private static float Generate(float x, float y)
+        private float Generate(float x, float y)
         {
             const float F2 = 0.366025403f; // F2 = 0.5*(sqrt(3.0)-1.0)
             const float G2 = 0.211324865f; // G2 = (3.0-Math.sqrt(3.0))/6.0
@@ -185,7 +185,7 @@ namespace SimplexNoise
         }
 
 
-        private static float Generate(float x, float y, float z)
+        private float Generate(float x, float y, float z)
         {
             // Simple skewing factors for the 3D case
             const float F3 = 0.333333333f;
@@ -288,9 +288,9 @@ namespace SimplexNoise
             return 32.0f * (n0 + n1 + n2 + n3); // TODO: The scale factor is preliminary!
         }
 
-        private static byte[] _perm;
+        private byte[] _perm;
 
-        private static readonly byte[] PermOriginal = {
+        private readonly byte[] PermOriginal = {
             151,160,137,91,90,15,
             131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23,
             190, 6,148,247,120,234,75,0,26,197,62,94,252,219,203,117,35,11,32,57,177,33,
@@ -319,18 +319,18 @@ namespace SimplexNoise
             138,236,205,93,222,114,67,29,24,72,243,141,128,195,78,66,215,61,156,180 
         };
 
-        private static int FastFloor(float x)
+        private int FastFloor(float x)
         {
             return (x > 0) ? ((int)x) : (((int)x) - 1);
         }
 
-        private static int Mod(int x, int m)
+        private int Mod(int x, int m)
         {
             var a = x % m;
             return a < 0 ? a + m : a;
         }
 
-        private static float Grad(int hash, float x)
+        private float Grad(int hash, float x)
         {
             var h = hash & 15;
             var grad = 1.0f + (h & 7);   // Gradient value 1.0, 2.0, ..., 8.0
@@ -338,7 +338,7 @@ namespace SimplexNoise
             return (grad * x);           // Multiply the gradient with the distance
         }
 
-        private static float Grad(int hash, float x, float y)
+        private float Grad(int hash, float x, float y)
         {
             var h = hash & 7;      // Convert low 3 bits of hash code
             var u = h < 4 ? x : y;  // into 8 simple gradient directions,
@@ -346,7 +346,7 @@ namespace SimplexNoise
             return ((h & 1) != 0 ? -u : u) + ((h & 2) != 0 ? -2.0f * v : 2.0f * v);
         }
 
-        private static float Grad(int hash, float x, float y, float z)
+        private float Grad(int hash, float x, float y, float z)
         {
             var h = hash & 15;     // Convert low 4 bits of hash code into 12 simple
             var u = h < 8 ? x : y; // gradient directions, and compute dot product.
@@ -354,7 +354,7 @@ namespace SimplexNoise
             return ((h & 1) != 0 ? -u : u) + ((h & 2) != 0 ? -v : v);
         }
 
-        private static float Grad(int hash, float x, float y, float z, float t)
+        private float Grad(int hash, float x, float y, float z, float t)
         {
             var h = hash & 31;      // Convert low 5 bits of hash code into 32 simple
             var u = h < 24 ? x : y; // gradient directions, and compute dot product.
